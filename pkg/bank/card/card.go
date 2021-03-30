@@ -3,86 +3,51 @@ package card
 import "bank/pkg/bank/types"
 
 
-
-func IssueCard(currency types.Currency, color string, name string) types.Card   {
-	card := types.Card{
-		ID: 1000,
-		PAN: "5058 xxxx xxxx 0001",
-		Balance: 0,
-		Currency: currency,
-		Color: color,
-		Name: name,
-		Active: true,
-	}
+func Total(cards []types.Card) types.Money {
 	
+	sum := types.Money(0)
 
-	return card
+	for _, card := range cards{
+
+		if !card.Active{
+			continue
+		} 
+		if card.Balance <= 0{
+			continue
+		}
+		sum += card.Balance
+		
+	}
+
+	return sum
 	
 }
 
 
 
-func Withdraw(card *types.Card, amount types.Money)  {
-	
-	
+func PaymentSources(cards []types.Card)[]types.PaymentSource {
+		payments := []types.PaymentSource{}
 
-	limit := 2_000_000
-
-	if card.Active == false{
-		return 
-	}
-	
-
-	if card.Balance < amount{
-		return 
-	}
-	if amount >= types.Money(limit){
-		return 
-	}
-	card.Balance -= amount
-
-
-
-	}
-
-
-	func Deposit(card *types.Card, amount types.Money)  {
-		
-		if amount < 0{
-			return 
-		}
-
-		if !card.Active{
-			return
-		}
-
-		if amount > 5_000_000{
-			return
-		}
-
-
-
-
-		card.Balance += amount
-		
-	}
-	
-
-
-	func Total(cards []types.Card) types.Money  {
-		var sum types.Money
-
-	
 
 		for _, card := range cards{
+			if card.Balance <= 0{
+				continue
+			}
+			if !card.Active{
+				continue
+			}
+
+			payment := types.PaymentSource{
+				Type: "card",
+				Number: string(card.PAN),
+				Balance: card.Balance,
+			}	
+
+			payments = append(payments, payment)
 			
-			sum +=  card.Balance
 
 		}
 
-		
-		return sum
-		
-	}
-
-
+		return payments
+	
+}
